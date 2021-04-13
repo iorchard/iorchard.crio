@@ -1,2 +1,12 @@
 ---
-# defaults file for iorchard.crio
+# kernel modules
+crio_modules:
+  - { state: "present", option: "br_netfilter" }
+  - { state: "present", option: "overlay" }
+
+# sysctl entries
+crio_sysctl:
+  - { state: "present", name: "net.bridge.bridge-nf-call-ip6tables", value: "1" }
+  - { state: "present", name: "net.bridge.bridge-nf-call-iptables", value: "1" }
+  - { state: "present", name: "net.ipv4.ip_forward", value: "1" }
+...

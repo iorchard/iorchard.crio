@@ -1,6 +1,59 @@
 ---
-# tasks file for iorchard.crio
-- name: test debug
-  ansible.builtin.debug:
-    var: ansible_facts
+- name: include default variables
+  include_vars: "../vars/main.yml"
+
+- name: include release specific variables
+  include_vars: "{{ lookup('first_found', _params) }}"
+  vars:
+    _params:
+      files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
+      paths:
+        - "../vars"
+  ignore_errors: true
+
+- name: include release specific tasks
+  include_tasks: "{{ lookup('first_found', _params) }}"
+  vars:
+    _params:
+      files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
+      paths:
+        - "."
+  ignore_errors: true
+
+- name: Add necessary kernel modules for crio
+  community.general.ini_file:
+    option: "{{ item.option }}"
+    state: "{{ item.state }}"
+    path: "/etc/modules-load.d/crio.conf"
+    section: ""
+    mode: "0644"
+    allow_no_value: yes
+  loop: "{{ crio_modules }}"
+  notify:
+    - crio | systemctl restart systemd-modules-load.service
+
+- name: Add sysctl entries
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: "{{ item.state }}"
+    sysctl_file: "/etc/sysctl.conf"
+    reload: no
+  loop: "{{ crio_sysctl }}"
+  notify:
+    - crio | sysctl --system
+
+- name: Force all notified handlers to run now
+  ansible.builtin.meta: flush_handlers
+
 ...
