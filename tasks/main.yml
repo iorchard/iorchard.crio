@@ -39,6 +39,7 @@
     mode: "0644"
     allow_no_value: yes
   loop: "{{ crio_modules }}"
+  become: yes
   notify:
     - crio | systemctl restart systemd-modules-load.service
 
@@ -50,10 +51,10 @@
     sysctl_file: "/etc/sysctl.conf"
     reload: no
   loop: "{{ crio_sysctl }}"
+  become: yes
   notify:
     - crio | sysctl --system
 
 - name: Force all notified handlers to run now
   ansible.builtin.meta: flush_handlers
-
 ...

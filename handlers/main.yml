@@ -3,17 +3,20 @@
   service:
     name: "systemd-modules-load.service"
     state: "restarted"
+  become: yes
   changed_when: no
   ignore_errors: yes
 
 - name: crio | sysctl --system
   command: sysctl --system
+  become: yes
   changed_when: no
   ignore_errors: yes
 
 - name: crio | systemctl daemon-reload
   systemd:
     daemon_reload: yes
+  become: yes
   changed_when: no
   ignore_errors: yes
 ...
