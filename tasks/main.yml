@@ -1,0 +1,6 @@
+---
+# tasks file for iorchard.crio
+- name: test debug
+  ansible.builtin.debug:
+    var: ansible_facts
+...
