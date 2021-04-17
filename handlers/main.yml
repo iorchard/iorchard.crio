@@ -1,22 +1,27 @@
 ---
 - name: crio | systemctl restart systemd-modules-load.service
-  service:
+  ansible.builtin.service:
     name: "systemd-modules-load.service"
     state: "restarted"
   become: yes
   changed_when: no
-  ignore_errors: yes
 
 - name: crio | sysctl --system
-  command: sysctl --system
+  ansible.builtin.command: sysctl --system
   become: yes
   changed_when: no
-  ignore_errors: yes
 
 - name: crio | systemctl daemon-reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: yes
   become: yes
   changed_when: no
-  ignore_errors: yes
+
+- name: crio | systemctl start crio
+  ansible.builtin.systemd:
+    name: crio
+    state: started
+    enabled: yes
+  become: yes
+  changed_when: no
 ...

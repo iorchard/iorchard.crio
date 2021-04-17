@@ -1,34 +1,20 @@
 ---
 - name: include default variables
-  include_vars: "../vars/main.yml"
+  ansible.builtin.include_vars: "../vars/main.yml"
 
-- name: include release specific variables
-  include_vars: "{{ lookup('first_found', _params) }}"
+- name: include os specific variables
+  ansible.builtin.include_vars: "{{ lookup('first_found', _params) }}"
   vars:
     _params:
       files:
         - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}.yml"
         - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
         - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
         - "{{ ansible_distribution | lower }}.yml"
         - "{{ ansible_os_family | lower }}.yml"
       paths:
         - "../vars"
-  ignore_errors: true
-
-- name: include release specific tasks
-  include_tasks: "{{ lookup('first_found', _params) }}"
-  vars:
-    _params:
-      files:
-        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
-        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
-        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
-        - "{{ ansible_distribution | lower }}.yml"
-        - "{{ ansible_os_family | lower }}.yml"
-      paths:
-        - "."
-  ignore_errors: true
 
 - name: Add necessary kernel modules for crio
   community.general.ini_file:
@@ -55,6 +41,21 @@
   notify:
     - crio | sysctl --system
 
+- name: include os specific tasks
+  ansible.builtin.include_tasks: "{{ lookup('first_found', _params) }}"
+  vars:
+    _params:
+      files:
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_release | lower }}.yml"
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
+      paths:
+        - "."
+
 - name: Force all notified handlers to run now
   ansible.builtin.meta: flush_handlers
+
 ...

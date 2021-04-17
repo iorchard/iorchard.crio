@@ -1,0 +1,22 @@
+---
+# pre-requisite packages
+prereq_pkgs:
+  - gnupg
+  - python3-apt
+
+# crio keyring
+crio_os: "Debian_Testing"
+crio_keyrings:
+  - {  url: "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}/{{ crio_os }}/Release.key", keyring: "/usr/share/keyrings/cri-o-archive-keyring.gpg" }
+  - {  url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key", keyring: "/usr/share/keyrings/libcontainers-archive-keyring.gpg" }
+
+# crio repos
+crio_repos:
+  - { repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/ /", filename: "devel:kubic:libcontainers:stable" }
+  - { repo: "deb [signed-by=/usr/share/keyrings/cri-o-archive-keyring.gpg] http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ crio_os }}/ /", filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}" }
+
+# cri-o packages
+crio_pkgs:
+  - cri-o
+  - cri-o-runc
+...

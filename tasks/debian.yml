@@ -1,1 +1,40 @@
 ---
+- name: Install prerequisite packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    allow_unauthenticated: no
+  loop: "{{ prereq_pkgs }}"
+  become: yes
+
+- name: Install crio repo keyrings
+  ansible.builtin.apt_key:
+    url: "{{ item.url }}"
+    keyring: "{{ item.keyring }}"
+    state: present
+  loop: "{{ crio_keyrings }}"
+  become: yes
+
+- name: Add crio repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item.repo }}"
+    state: present
+    mode: "0644"
+    filename: "{{ item.filename }}"
+    update_cache: yes
+    validate_certs: yes
+  loop: "{{ crio_repos }}"
+  become: yes
+
+- name: Install cri-o packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    allow_unauthenticated: no
+    update_cache: yes
+  loop: "{{ crio_pkgs }}"
+  become: yes
+  notify:
+    - crio | systemctl start crio
+...
