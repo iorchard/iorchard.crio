@@ -7,13 +7,18 @@ prereq_pkgs:
 # crio keyring
 crio_os: "Debian_Testing"
 crio_keyrings:
-  - {  url: "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}/{{ crio_os }}/Release.key", keyring: "/usr/share/keyrings/cri-o-archive-keyring.gpg" }
-  - {  url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key", keyring: "/usr/share/keyrings/libcontainers-archive-keyring.gpg" }
+  - url: "https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}/{{ crio_os }}/Release.key"
+    file: "/usr/share/keyrings/cri-o-archive-keyring.gpg"
+  - url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/Release.key"
+    file: "/usr/share/keyrings/libcontainers-archive-keyring.gpg"
 
 # crio repos
+crio_repos_url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable"
 crio_repos:
-  - { repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/{{ crio_os }}/ /", filename: "devel:kubic:libcontainers:stable" }
-  - { repo: "deb [signed-by=/usr/share/keyrings/cri-o-archive-keyring.gpg] http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/{{ crio_version }}/{{ crio_os }}/ /", filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}" }
+  - repo: "deb [signed-by=/usr/share/keyrings/libcontainers-archive-keyring.gpg] {{ crio_repos_url }}/{{ crio_os }}/ /"
+    filename: "devel:kubic:libcontainers:stable"
+  - repo: "deb [signed-by=/usr/share/keyrings/cri-o-archive-keyring.gpg] {{ crio_repos_url }}:/cri-o:/{{ crio_version }}/{{ crio_os }}/ /"
+    filename: "devel:kubic:libcontainers:stable:cri-o:{{ crio_version }}"
 
 # cri-o packages
 crio_pkgs:

@@ -3,18 +3,18 @@
   apt:
     name: "{{ item }}"
     state: present
-    update_cache: yes
-    allow_unauthenticated: no
+    update_cache: true
+    allow_unauthenticated: false
   loop: "{{ prereq_pkgs }}"
-  become: yes
+  become: true
 
 - name: Install crio repo keyrings
   ansible.builtin.apt_key:
     url: "{{ item.url }}"
-    keyring: "{{ item.keyring }}"
+    keyring: "{{ item.file }}"
     state: present
   loop: "{{ crio_keyrings }}"
-  become: yes
+  become: true
 
 - name: Add crio repositories
   ansible.builtin.apt_repository:
@@ -22,19 +22,19 @@
     state: present
     mode: "0644"
     filename: "{{ item.filename }}"
-    update_cache: yes
-    validate_certs: yes
+    update_cache: true
+    validate_certs: true
   loop: "{{ crio_repos }}"
-  become: yes
+  become: true
 
 - name: Install cri-o packages
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
-    allow_unauthenticated: no
-    update_cache: yes
+    allow_unauthenticated: false
+    update_cache: true
   loop: "{{ crio_pkgs }}"
-  become: yes
+  become: true
   notify:
     - crio | systemctl start crio
 ...

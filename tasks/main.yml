@@ -23,9 +23,9 @@
     path: "/etc/modules-load.d/crio.conf"
     section: ""
     mode: "0644"
-    allow_no_value: yes
+    allow_no_value: true
   loop: "{{ crio_modules }}"
-  become: yes
+  become: true
   notify:
     - crio | systemctl restart systemd-modules-load.service
 
@@ -35,9 +35,9 @@
     value: "{{ item.value }}"
     state: "{{ item.state }}"
     sysctl_file: "/etc/sysctl.conf"
-    reload: no
+    reload: false
   loop: "{{ crio_sysctl }}"
-  become: yes
+  become: true
   notify:
     - crio | sysctl --system
 
